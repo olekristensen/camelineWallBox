@@ -1,9 +1,6 @@
 #include <AccelStepper.h>
-#include <AFMotor.h>
 
-AF_Stepper motor(200, 1);
-
-const int buttonPin = 13;
+const int buttonPin = 3;
 int lastButtonState = LOW;
 int wasButtonPushed = LOW;
 int buttonState;
@@ -15,26 +12,23 @@ long maxPositionSteps = 0L;
 boolean foundMaxPositionSteps = false;
 long minPositionSteps = 0L;
 boolean foundMinPositionSteps = false;
-int maxSpeed = 500;
+int maxSpeed = 1000;
 int maxAcceleration = round(maxSpeed * 0.5);
 long margin = 200;
 
 const int sensorPin = 2;
 
-void forwardstep() {  
-  motor.onestep(FORWARD, SINGLE);
-}
-void backwardstep() {  
-  motor.onestep(BACKWARD, SINGLE);
-}
-
-AccelStepper stepper(forwardstep, backwardstep);
+AccelStepper stepper( AccelStepper::FULL4WIRE, 8, 9, 12, 13);
 
 void setup() {
 
   Serial.begin(9600); // set up Serial library at 9600 bps
-  pinMode(buttonPin, INPUT_PULLUP);  // initialize the pushbutton pin as an input:  
+  pinMode(buttonPin, INPUT);  // initialize the pushbutton pin as an input:  
   pinMode(sensorPin, INPUT);
+  pinMode(10, OUTPUT);
+  pinMode(11, OUTPUT);
+  digitalWrite(10, HIGH);
+  digitalWrite(11, HIGH);
   stepper.setMaxSpeed(maxSpeed);
   stepper.setAcceleration(maxAcceleration);
 }
@@ -46,7 +40,7 @@ void loop(){
    ** debouncing button and changing state on logical rising edge
    *********/
 
-  int isButtonPushed = !digitalRead(buttonPin);
+  int isButtonPushed = digitalRead(buttonPin);
   if(isButtonPushed != lastButtonState){
     lastButtonPushed = millis();
   }
